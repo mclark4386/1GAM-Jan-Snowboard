@@ -1,4 +1,4 @@
-APP = sensors
+APP = snowboard
 
 include $(SDK_DIR)/Makefile.defs
 

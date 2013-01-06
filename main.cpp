@@ -7,8 +7,8 @@
 using namespace Sifteo;
 
 static Metadata M = Metadata()
-    .title("Sensors SDK Example")
-    .package("com.sifteo.sdk.sensors", "1.1")
+    .title("Snowboard!")
+    .package("com.Matthew.Clark.Snowboard", "0.1")
     .icon(Icon)
     .cubeRange(0, CUBE_ALLOCATION);
 
