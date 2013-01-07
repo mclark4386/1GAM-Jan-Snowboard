@@ -4,6 +4,9 @@
 
 #include <sifteo.h>
 #include "assets.gen.h"
+
+#include "physics.hpp"
+
 using namespace Sifteo;
 
 static Metadata M = Metadata()
@@ -35,6 +38,8 @@ public:
         // Handle already-connected cubes
         for (CubeID cube : CubeSet::connected())
             onConnect(cube);
+
+	AudioTracker::play(musicTrack);
     }
 
 private:
