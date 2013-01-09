@@ -159,7 +159,62 @@ private:
 
     playerVel = calcNewVelocity(playerVel,cube.accel(),dt);
     playerPos = playerPos+ playerVel;
+
+    int side = sideOfWorldCollision(playerPos,vec(32,32));
+    if(side != NO_SIDE){//we have a collision, so handle it
+      LOG("collided with wall %d\n",side);
+      unsigned id = cubes[playerCubeID].neighborsID(side);
+      if(id == Cube::MAX_UINT){
+	  GAMEOVER(false);
+      }else{
+	LOG("current:%d id of neighbor:%d\n",playerCubeID,id);
+	//move player to new screen
+	int newCubesSide = cubes[id].neighborsSide(playerCubeID);
+	if(newCubesSide == NO_SIDE){
+	  GAMEOVER(false);
+	}
+	//TODO: Check if side of new cube is open
+	unsigned oldCube = playerCubeID;
+	if(newCubesSide == TOP){
+	  playerPos.y = -10;
+	  cubes[playerCubeID].vbuf().sprites.erase();
+	  playerCubeID = id;
+	  return;
+	}
+	if(newCubesSide == BOTTOM){
+	  playerPos.y = 100;
+	  playerVel.y = -playerVel.y;
+	  cubes[playerCubeID].vbuf().sprites.erase();
+	  playerCubeID = id;
+	  return;
+	}
+	if(newCubesSide == LEFT){
+	  playerPos.x = -10;
+	  cubes[playerCubeID].vbuf().sprites.erase();
+	  playerCubeID = id;
+	  return;
+	}
+	if(newCubesSide == RIGHT){
+	  playerPos.x = 100;
+	  playerVel.x = -playerVel.y;
+	  cubes[playerCubeID].vbuf().sprites.erase();
+	  playerCubeID = id;
+	  return;
+	}
+      }
+    }
+    
     // LOG("PHYSICS: %s",str.c_str());
+  }
+
+
+  void GAMEOVER(bool win){
+    //TODO: fill this out a bit more
+    if(win){
+      LOG("WIN!");
+    }else{
+      LOG("Game Over!");
+    }
   }
   
 };
