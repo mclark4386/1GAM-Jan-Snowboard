@@ -42,7 +42,7 @@ public:
       cubes[cube].setup(cube);
     }
     
-    AudioTracker::play(musicTrack);
+    AudioTracker::play(Music);
   }
   
   void run(){
@@ -62,7 +62,7 @@ public:
 private:
   TimeTicker physicsClock;
   bool running;
-  char playerCubeID;
+  unsigned playerCubeID;
   Float2 playerPos;
   Float2 playerVel;
 
@@ -138,17 +138,14 @@ private:
 	<< "\n\n";
 
     
-
-    // drawSideIndicator(draw, nb, vec( 1,  0), vec(14,  1), TOP);
-    // drawSideIndicator(draw, nb, vec( 0,  1), vec( 1, 14), LEFT);
-    // drawSideIndicator(draw, nb, vec( 1, 15), vec(14,  1), BOTTOM);
-    // drawSideIndicator(draw, nb, vec(15,  1), vec( 1, 14), RIGHT);
   }
   
   void draw(){
     for(Cube cube:cubes){
       cube.draw();
     }
+    cubes[playerCubeID].vbuf().sprites[0].setImage(Question,1);
+    cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
   }
   
   void doPhysics(float dt){

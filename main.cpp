@@ -6,6 +6,9 @@
 
 using namespace Sifteo;
 
+static AssetSlot MainSlot = AssetSlot::allocate()
+  .bootstrap(GameAssets).bootstrap(Fonts);
+
 static Metadata M = Metadata()
     .title("Snowboard!")
     .package("com.Matthew.Clark.Snowboard", "0.1")
