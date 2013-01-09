@@ -72,18 +72,19 @@ private:
     bzero(cubeStats[id]);
     LOG("Cube %d connected\n", id);
     
-    vid[id].initMode(BG0_ROM);
+    vid[id].initMode(BG0_SPR_BG1);
     vid[id].attach(id);
     motion[id].attach(id);
     
     //try to set up the bg
-    //	vid[id].bg0.image(vec(0,0),Snow);//not going to work in bg0rom mode
+    vid[id].bg0.image(vec(0,0),Snow);//not going to work in bg0rom mode
     
     // Draw the cube's identity
-    String<128> str;
-    str << "I am cube #" << cube << "\n";
-    str << "hwid " << Hex(hwid >> 32) << "\n     " << Hex(hwid) << "\n\n";
-    vid[cube].bg0rom.text(vec(1,2), str);
+    // String<128> str;
+    // str << "I am cube #" << cube << "\n";
+    // str << "hwid " << Hex(hwid >> 32) << "\n     " << Hex(hwid) << "\n\n";
+    // vid[cube].bg0rom.text(vec(1,2), str);
+
     
     // Draw initial state for all sensors
     onAccelChange(cube);
@@ -97,10 +98,10 @@ private:
     cubeStats[id].touch++;
     LOG("Touch event on cube #%d, state=%d\n", id, cube.isTouching());
     
-    String<32> str;
-    str << "touch: " << cube.isTouching() <<
-      " (" << cubeStats[cube].touch << ")\n";
-    vid[cube].bg0rom.text(vec(1,9), str);
+    // String<32> str;
+    // str << "touch: " << cube.isTouching() <<
+    //   " (" << cubeStats[cube].touch << ")\n";
+    //  vid[cube].bg0rom.text(vec(1,9), str);
   }
   
   void onAccelChange(unsigned id)
@@ -118,7 +119,7 @@ private:
 	<< Fixed(playerPos.x, 3)
 	<< Fixed(playerPos.y, 3) << "\n";
     
-    vid[cube].bg0rom.text(vec(1,10), str);
+    //  vid[cube].bg0rom.text(vec(1,10), str);
   }
 
   void onNeighborRemove(unsigned firstID, unsigned firstSide, unsigned secondID, unsigned secondSide)
@@ -165,7 +166,7 @@ private:
 	<< "\n\n";
     
     BG0ROMDrawable &draw = vid[cube].bg0rom;
-    draw.text(vec(1,6), str);
+    //  draw.text(vec(1,6), str);
     
     drawSideIndicator(draw, nb, vec( 1,  0), vec(14,  1), TOP);
     drawSideIndicator(draw, nb, vec( 0,  1), vec( 1, 14), LEFT);
