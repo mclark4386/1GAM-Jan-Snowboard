@@ -20,7 +20,7 @@ static TiltShakeRecognizer motion[CUBE_ALLOCATION];
 
 class Game {
 public:
-  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(0,0)),playerVel(vec(0,0)){}
+  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(48,1)),playerVel(vec(0,0)){}
   
   struct CubeStats {
     Vector3<float> acceleration;
@@ -98,13 +98,11 @@ private:
   {
     LOG("Neighbor Remove: %02x:%d - %02x:%d\n", firstID, firstSide, secondID, secondSide);
     
-    if (firstID < arraysize(cubeStats)) {
-      cubeStats[firstID].neighborRemove++;
-      drawNeighbors(firstID);
+    if (firstID < arraysize(cubes)&&cubes[firstID].isValid()) {
+      cubes[firstID].removeNeighborBySide(firstSide);
     }
-    if (secondID < arraysize(cubeStats)) {
-      cubeStats[secondID].neighborRemove++;
-      drawNeighbors(secondID);
+    if (secondID < arraysize(cubes)&&cubes[secondID].isValid()) {
+      cubes[secondID].removeNeighborBySide(secondSide);
     }
   }
   
@@ -112,13 +110,9 @@ private:
   {
     LOG("Neighbor Add: %02x:%d - %02x:%d\n", firstID, firstSide, secondID, secondSide);
     
-    if (firstID < arraysize(cubeStats)) {
-            cubeStats[firstID].neighborAdd++;
-            drawNeighbors(firstID);
-    }
-    if (secondID < arraysize(cubeStats)) {
-      cubeStats[secondID].neighborAdd++;
-      drawNeighbors(secondID);
+    if (firstID < arraysize(cubes)&&cubes[firstID].isValid()&&secondID < arraysize(cubes)&&cubes[secondID].isValid()) {
+      cubes[firstID].addNeighbor(secondID,firstSide);
+      cubes[secondID].addNeighbor(firstID,secondSide);
     }
   }
   
