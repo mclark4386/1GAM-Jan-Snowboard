@@ -11,10 +11,11 @@
 #include "assets.gen.h"
 
 #include "physics.hpp"
+#include "cube.hpp"
 
 using namespace Sifteo;
 
-static VideoBuffer vid[CUBE_ALLOCATION];
+static Cube cubes[CUBE_ALLOCATION];
 static TiltShakeRecognizer motion[CUBE_ALLOCATION];
 
 class Game {
@@ -37,8 +38,9 @@ public:
     Events::cubeConnect.set(&Game::onConnect, this);
     
     // Handle already-connected cubes
-    for (CubeID cube : CubeSet::connected())
-      onConnect(cube);
+    for (CubeID cube : CubeSet::connected()){
+      cubes[cube].setup(cube);
+    }
     
     AudioTracker::play(musicTrack);
   }
@@ -64,32 +66,8 @@ private:
   Float2 playerPos;
   Float2 playerVel;
 
-  void onConnect(unsigned id)
-  {
-    CubeID cube(id);
-    uint64_t hwid = cube.hwID();
-    
-    bzero(cubeStats[id]);
-    LOG("Cube %d connected\n", id);
-    
-    vid[id].initMode(BG0_SPR_BG1);
-    vid[id].attach(id);
-    motion[id].attach(id);
-    
-    //try to set up the bg
-    vid[id].bg0.image(vec(0,0),Snow);//not going to work in bg0rom mode
-    
-    // Draw the cube's identity
-    // String<128> str;
-    // str << "I am cube #" << cube << "\n";
-    // str << "hwid " << Hex(hwid >> 32) << "\n     " << Hex(hwid) << "\n\n";
-    // vid[cube].bg0rom.text(vec(1,2), str);
-
-    
-    // Draw initial state for all sensors
-    onAccelChange(cube);
-    onTouch(cube);
-    drawNeighbors(cube);
+  void onConnect(unsigned id){
+    cubes[id].setup(id);
   }
   
   void onTouch(unsigned id)
@@ -97,11 +75,6 @@ private:
     CubeID cube(id);
     cubeStats[id].touch++;
     LOG("Touch event on cube #%d, state=%d\n", id, cube.isTouching());
-    
-    // String<32> str;
-    // str << "touch: " << cube.isTouching() <<
-    //   " (" << cubeStats[cube].touch << ")\n";
-    //  vid[cube].bg0rom.text(vec(1,9), str);
   }
   
   void onAccelChange(unsigned id)
@@ -119,7 +92,6 @@ private:
 	<< Fixed(playerPos.x, 3)
 	<< Fixed(playerPos.y, 3) << "\n";
     
-    //  vid[cube].bg0rom.text(vec(1,10), str);
   }
 
   void onNeighborRemove(unsigned firstID, unsigned firstSide, unsigned secondID, unsigned secondSide)
@@ -164,26 +136,19 @@ private:
     str << "   +" << cubeStats[cube].neighborAdd
 	<< ", -" << cubeStats[cube].neighborRemove
 	<< "\n\n";
+
     
-    BG0ROMDrawable &draw = vid[cube].bg0rom;
-    //  draw.text(vec(1,6), str);
-    
-    drawSideIndicator(draw, nb, vec( 1,  0), vec(14,  1), TOP);
-    drawSideIndicator(draw, nb, vec( 0,  1), vec( 1, 14), LEFT);
-    drawSideIndicator(draw, nb, vec( 1, 15), vec(14,  1), BOTTOM);
-    drawSideIndicator(draw, nb, vec(15,  1), vec( 1, 14), RIGHT);
-  }
-  
-  static void drawSideIndicator(BG0ROMDrawable &draw, Neighborhood &nb,
-				Int2 topLeft, Int2 size, Side s)
-  {
-    unsigned nbColor = draw.ORANGE;
-    draw.fill(topLeft, size,
-	      nbColor | (nb.hasNeighborAt(s) ? draw.SOLID_FG : draw.SOLID_BG));
+
+    // drawSideIndicator(draw, nb, vec( 1,  0), vec(14,  1), TOP);
+    // drawSideIndicator(draw, nb, vec( 0,  1), vec( 1, 14), LEFT);
+    // drawSideIndicator(draw, nb, vec( 1, 15), vec(14,  1), BOTTOM);
+    // drawSideIndicator(draw, nb, vec(15,  1), vec( 1, 14), RIGHT);
   }
   
   void draw(){
-    
+    for(Cube cube:cubes){
+      cube.draw();
+    }
   }
   
   void doPhysics(float dt){
