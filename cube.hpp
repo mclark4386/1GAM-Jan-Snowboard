@@ -24,6 +24,7 @@ public:
     
     //try to set up the bg
     vid.bg0.image(vec(0,0),Snow,0);
+    resetLayout();
     System::paint();
     isSetup = true;
   }
@@ -33,13 +34,35 @@ public:
       //      vid.bg0.image(vec(0,0),Snow);//may not be needed
     }
   }
+
+  void resetLayout(float time = 0){
+    static float timeToWaitBeforeFinish = 30000;
+    static float percentChanceOfFinish = 90/100;
+    if(time > timeToWaitBeforeFinish){//been playing for longer then 30seconds
+      if(rand.random() >= percentChanceOfFinish){//10% chance to spawn the finish line
+	//spawn finishline
+	return;
+      }
+    }
+
+    //not finish, but still good!
+    switch(rand.randint(0,4)){
+    case 0:
+      //curve
+    case 1:
+      //straight
+    case 2:
+      //straight
+    case 3:
+      //straight
+    default:
+      //straight
+      break;
+    }
+  }
   
-  bool addNeighbor(unsigned id, unsigned side){
-    if(neighbors[side] != MAX_UINT)
-      return false;
-    
+  void addNeighbor(unsigned id, unsigned side){
     neighbors[side] = id;
-    return true;
   }
   
   void removeNeighborByID(unsigned id){
@@ -86,7 +109,7 @@ private:
   VideoBuffer vid;
   bool isSetup;
   unsigned neighbors[4];
-
+  Random rand;
 };
 
 #endif /* _CUBE_H_ */
