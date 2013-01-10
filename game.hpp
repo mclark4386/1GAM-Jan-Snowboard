@@ -97,7 +97,7 @@ private:
   void onNeighborRemove(unsigned firstID, unsigned firstSide, unsigned secondID, unsigned secondSide)
   {
     LOG("Neighbor Remove: %02x:%d - %02x:%d\n", firstID, firstSide, secondID, secondSide);
-    
+
     if (firstID < arraysize(cubes)&&cubes[firstID].isValid()) {
       cubes[firstID].removeNeighborBySide(firstSide);
     }
@@ -110,6 +110,36 @@ private:
   {
     LOG("Neighbor Add: %02x:%d - %02x:%d\n", firstID, firstSide, secondID, secondSide);
     
+    switch(firstSide){
+    case TOP:
+      LOG("first top\n");
+      break;
+    case BOTTOM:
+      LOG("first Bottom\n");
+      break;
+    case LEFT:
+      LOG("first left\n");
+      break;
+    case RIGHT:
+      LOG("first right\n");
+      break;
+    }
+    
+    switch(secondSide){
+    case TOP:
+      LOG("2 top\n");
+      break;
+    case BOTTOM:
+      LOG("2 Bottom\n");
+      break;
+    case LEFT:
+      LOG("2 left\n");
+      break;
+    case RIGHT:
+      LOG("2 right\n");
+      break;
+    }
+
     if (firstID < arraysize(cubes)&&cubes[firstID].isValid()&&secondID < arraysize(cubes)&&cubes[secondID].isValid()) {
       cubes[firstID].addNeighbor(secondID,firstSide);
       cubes[secondID].addNeighbor(firstID,secondSide);
@@ -127,18 +157,13 @@ private:
 	<< Hex(nb.neighborAt(BOTTOM), 2) << " "
 	<< Hex(nb.neighborAt(RIGHT), 2) << "\n";
     
-    str << "   +" << cubeStats[cube].neighborAdd
-	<< ", -" << cubeStats[cube].neighborRemove
-	<< "\n\n";
-
-    
   }
   
   void draw(){
     for(Cube cube:cubes){
       cube.draw();
     }
-    cubes[playerCubeID].vbuf().sprites[0].setImage(Question,1);
+    cubes[playerCubeID].vbuf().sprites[0].setImage(Player,1);
     cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
   }
   
