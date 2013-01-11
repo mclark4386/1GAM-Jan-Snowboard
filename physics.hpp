@@ -13,7 +13,7 @@ static const float kGravity = 9.806f;
 static const float kDampen = 0.95f;
 
 template<class T, class F> 
-Vector2<T> calcNewVelocity(Vector2<T> oldVelocity, Vector3<F> accel, float dt){
+Vector2<T> calcNewVelocity(const Vector2<T> oldVelocity, const Vector3<F> accel, const float dt){
   if(accel.x <= 1&&accel.x >= -1&&accel.y <= 1&&accel.y >=-1){//hopefully reduce jittering
     return oldVelocity*kDampen;
   }
@@ -28,7 +28,7 @@ bool collisionDetect(Int2 originA, Int2 sizeA,Int2 originB, Int2 sizeB){
 };
 
 template<class T, class F>
-int sideOfWorldCollision(Vector2<T> pos, Vector2<F> size){
+int sideOfWorldCollision(const Vector2<T> pos, const Vector2<F> size){
   if(pos.x+(size.x/2) < 0){
     return LEFT;
   }

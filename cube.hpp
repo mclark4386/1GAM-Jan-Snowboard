@@ -35,6 +35,7 @@ public:
     }
   }
 
+  //TODO: fill this out
   void resetLayout(float time = 0){
     static float timeToWaitBeforeFinish = 30000;
     static float percentChanceOfFinish = 90/100;
@@ -78,12 +79,12 @@ public:
     neighbors[side] = MAX_UINT;
   }
 
-  unsigned neighborsID(int side){
+  unsigned neighborsID(int side) const{
     if(side <= NO_SIDE||side >= NUM_SIDES) return MAX_UINT;
     return neighbors[side];
   }
 
-  int neighborsSide(unsigned id){
+  int neighborsSide(unsigned id) const{
     for(int i = 0; i<4; i++){
       if(neighbors[i] == id){
 	return i;
@@ -92,15 +93,15 @@ public:
     return NO_SIDE;
   }
   
-  unsigned id(){
+  unsigned id() const{
     return _id;
   }
   
-  VideoBuffer& vbuf(){
+  VideoBuffer& vbuf(){//can't be const because it may result in change even if it doesn't itself
     return vid;
   }
   
-  bool isValid(){
+  bool isValid() const{
     return isSetup&&_id!=MAX_UINT;
   }
   

@@ -25,7 +25,6 @@ public:
   {
     Events::neighborAdd.set(&Game::onNeighborAdd, this);
     Events::neighborRemove.set(&Game::onNeighborRemove, this);
-    Events::cubeAccelChange.set(&Game::onAccelChange, this);
     Events::cubeTouch.set(&Game::onTouch, this);
     Events::cubeConnect.set(&Game::onConnect, this);
     
@@ -71,23 +70,6 @@ private:
     CubeID cube(id);
     LOG("Touch event on cube #%d, state=%d\n", id, cube.isTouching());
   }
-  
-  void onAccelChange(unsigned id)
-  {
-    CubeID cube(id);
-    auto accel = cube.accel();
-    
-    String<64> str;
-    str << "acc: "
-	<< Fixed(accel.x, 3)
-	<< Fixed(accel.y, 3)
-	<< Fixed(accel.z, 3) << "\n";
-    
-    str << "pos: "
-	<< Fixed(playerPos.x, 3)
-	<< Fixed(playerPos.y, 3) << "\n";
-    
-  }
 
   void onNeighborRemove(unsigned firstID, unsigned firstSide, unsigned secondID, unsigned secondSide)
   {
@@ -104,36 +86,6 @@ private:
   void onNeighborAdd(unsigned firstID, unsigned firstSide, unsigned secondID, unsigned secondSide)
   {
     LOG("Neighbor Add: %02x:%d - %02x:%d\n", firstID, firstSide, secondID, secondSide);
-    
-    switch(firstSide){
-    case TOP:
-      LOG("first top\n");
-      break;
-    case BOTTOM:
-      LOG("first Bottom\n");
-      break;
-    case LEFT:
-      LOG("first left\n");
-      break;
-    case RIGHT:
-      LOG("first right\n");
-      break;
-    }
-    
-    switch(secondSide){
-    case TOP:
-      LOG("2 top\n");
-      break;
-    case BOTTOM:
-      LOG("2 Bottom\n");
-      break;
-    case LEFT:
-      LOG("2 left\n");
-      break;
-    case RIGHT:
-      LOG("2 right\n");
-      break;
-    }
 
     if (firstID < arraysize(cubes)&&cubes[firstID].isValid()&&secondID < arraysize(cubes)&&cubes[secondID].isValid()) {
       cubes[firstID].addNeighbor(secondID,firstSide);
@@ -165,18 +117,6 @@ private:
   void doPhysics(float dt){
     CubeID cube(playerCubeID);
 
-    // String<128> str;
-
-    // str <<"\n\tv("
-    // 	<<FixedFP(playerVel.x,1,3)<<", "<<FixedFP(playerVel.y,1,3)<<")\n\ta("
-    // 	<<FixedFP(cube.accel().x,1,3)<<", "<<FixedFP(cube.accel().y,1,3)<<", "<<FixedFP(cube.accel().z,1,3)<<")\n\tdt:"
-    // 	<<FixedFP(dt,1,3)<<", p("
-    // 	<<FixedFP(playerPos.x,1,3)<<", "<<FixedFP(playerPos.y,1,3)<<")\n";
-
-    // auto acc = static_cast<Float3>(cube.accel()).normalize();
-    // str<<"na("
-    //    <<FixedFP(acc.x,1, 3)<<", "<<FixedFP(acc.y,1, 3)<<", "<<FixedFP(acc.z,1, 3)<<")\n";
-
     playerVel = calcNewVelocity(playerVel,cube.accel(),dt);
     playerPos = playerPos+ playerVel;
 
@@ -200,21 +140,17 @@ private:
 	if(newCubesSide == TOP){;
 	  switch(side){
 	  case BOTTOM:
-	    LOG("from bottom to top\n");
 	    break;
 	  case TOP:
-	    LOG("from top to top\n");
 	    playerPos.x = 128 - 32 - playerPos.x;
 	    playerVel.y = -playerVel.y;
 	    break;
 	  case LEFT:
-	    LOG("from left to top\n");
 	    playerPos.x = playerPos.y;
 	    playerVel.y = -vx;
 	    playerVel.x = vy;
 	    break;
 	  case RIGHT:
-	    LOG("from right to top\n");
 	    playerPos.x = 128 - 32 - playerPos.y;
 	    playerVel.y = vx;
 	    playerVel.x = vy;
@@ -228,21 +164,17 @@ private:
 	if(newCubesSide == BOTTOM){
 	  switch(side){
 	  case BOTTOM:
-	    LOG("from bottom to bottom\n");
 	    playerPos.x = 128 - 32 - playerPos.x;
 	    playerVel.y = -playerVel.y;
 	    break;
 	  case TOP:
-	    LOG("from top to bottom\n");
 	    break;
 	  case LEFT:
-	    LOG("from left to bottom\n");
 	    playerPos.x = 128 - 32 - playerPos.y;
 	    playerVel.y = vx;
 	    playerVel.x = -vy;
 	    break;
 	  case RIGHT:
-	    LOG("from right to bottom\n");
 	    playerPos.x = playerPos.y;
 	    playerVel.y = -vx;
 	    playerVel.x = vy;
@@ -256,25 +188,21 @@ private:
 	if(newCubesSide == LEFT){
 	  switch(side){
 	  case BOTTOM:
-	    LOG("from bottom to Left\n");
 	    playerVel.x = vy;
 	    playerVel.y = -vx;
 	    playerPos.y = 128 - 32 - playerPos.x;
 	    break;
 	  case TOP:
-	    LOG("from top to Left\n");
 	    playerPos.y = 128 - 32 - playerPos.x;
 	    playerVel.x = -vy;
 	    playerVel.y = vx;
 	    break;
 	  case LEFT:
-	    LOG("from left to Left\n");
 	    playerPos.y = 128 - 32 - playerPos.y;
 	    playerVel.x = -vx;
 	    playerVel.y = -vy;
 	    break;
 	  case RIGHT:
-	    LOG("from right to Left\n");
 	    break;
 	  }
 	  playerPos.x = -10;
@@ -285,22 +213,18 @@ private:
 	if(newCubesSide == RIGHT){
 	  switch(side){
 	  case BOTTOM:
-	    LOG("from bottom to Right\n");
 	    playerPos.y = playerPos.x;
 	    playerVel.x = -vy;
 	    playerVel.y = vx;
 	    break;
 	  case TOP:
-	    LOG("from top to Right\n");
 	    playerVel.x = vy;
 	    playerVel.y = -vx;
 	    playerPos.y = 128 - 32 -playerPos.x;
 	    break;
 	  case LEFT:
-	    LOG("from left to Right\n");
 	    break;
 	  case RIGHT:
-	    LOG("from right to Right\n");
 	    playerPos.y = 128 - 32 - playerPos.y;
 	    playerVel.x = -vx;
 	    playerVel.y = -vy;
@@ -311,7 +235,7 @@ private:
 	  playerCubeID = id;
 	  return;
 	}
-	//TODO: reprepose oldCube
+	//reprepose oldCube
 	cubes[oldCube].resetLayout(startTime-SystemTime::now());
       }
     }
