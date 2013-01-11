@@ -23,8 +23,25 @@ Vector2<T> calcNewVelocity(const Vector2<T> oldVelocity, const Vector3<F> accel,
     return ((Accel*dt).xy() + oldVelocity) * kDampen;
 };
 
-bool collisionDetect(Int2 originA, Int2 sizeA,Int2 originB, Int2 sizeB){
-  return false;
+template<class T>
+bool collisionDetect(const Vector2<T> originA, const Vector2<T> sizeA, const Vector2<T> originB, const Vector2<T> sizeB){
+  T x1A = originA.x;
+  T x2A = originA.x+sizeA.x;
+  T y1A = originA.y;
+  T y2A = originA.y+sizeA.y;
+
+  T x1B = originB.x;
+  T x2B = originB.x+sizeB.x;
+  T y1B = originB.y;
+  T y2B = originB.y+sizeB.y;
+
+  if(y2A < y1B) return false;
+  if(y1A > y2B) return false;
+
+  if(x2A < x1B) return false;
+  if(x1A > x2B) return false;
+
+  return true;
 };
 
 template<class T, class F>
