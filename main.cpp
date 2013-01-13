@@ -7,7 +7,8 @@
 using namespace Sifteo;
 
 static AssetSlot MainSlot = AssetSlot::allocate()
-  .bootstrap(GameAssets).bootstrap(Fonts);
+  .bootstrap(GameAssets)
+  .bootstrap(Fonts);
 
 static Metadata M = Metadata()
     .title("Snowboard!")
