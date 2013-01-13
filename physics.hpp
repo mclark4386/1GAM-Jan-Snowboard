@@ -9,8 +9,8 @@
 using namespace Sifteo;
 
 
-static const float kGravity = 9.806f;
-static const float kDampen = 0.95f;
+static const float kGravity = 9.806f *8/*pixels/meter*/ ;
+static const float kDampen = 0.90f;
 
 template<class T, class F> 
 Vector2<T> calcNewVelocity(const Vector2<T> oldVelocity, const Vector3<F> accel, const float dt){
