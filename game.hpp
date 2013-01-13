@@ -17,9 +17,15 @@ using namespace Sifteo;
 
 static Cube cubes[CUBE_ALLOCATION];
 
+enum spriteRotation{
+  TOP_SPRITE = 0,
+  BOTTOM_SPRITE = 8,
+  RIGHT_SPRITE = 4,
+  LEFT_SPRITE =12
+};
 class Game {
 public:
-  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(48,1)),playerVel(vec(0,0)){}
+  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(48,1)),playerVel(vec(0,0)),gameover(false),currentSprite(1),playerRotation(TOP_SPRITE){}
 
   void install()
   {
@@ -60,6 +66,9 @@ private:
   unsigned playerCubeID;
   Float2 playerPos;
   Float2 playerVel;
+  bool gameover;
+  unsigned currentSprite;
+  spriteRotation playerRotation;
 
   void onConnect(unsigned id){
     cubes[id].setup(id);
@@ -68,6 +77,13 @@ private:
   void onTouch(unsigned id)
   {
     CubeID cube(id);
+    if(gameover&&id == playerCubeID){
+      LOG("reset cube/start over");
+      for(Cube& cube:cubes){
+	cube.resetLayout();
+      }
+      startTime = SystemTime::now();
+    }
     LOG("Touch event on cube #%d, state=%d\n", id, cube.isTouching());
   }
 
@@ -110,7 +126,7 @@ private:
     for(Cube cube:cubes){
       cube.draw();
     }
-    cubes[playerCubeID].vbuf().sprites[0].setImage(Player,1);
+    cubes[playerCubeID].vbuf().sprites[0].setImage(Player,playerRotation+currentSprite);
     cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
   }
   
