@@ -31,8 +31,8 @@ public:
     vid.initMode(BG0_SPR_BG1);
     vid.attach(id);
     
-    resetLayout();
     isSetup = true;
+    resetLayout();
   }
   
   void draw(){
@@ -43,6 +43,8 @@ public:
 
   //TODO: fill this out
   void resetLayout(float time = 0){
+    if(!isSetup)
+      return;
     LOG("resetLayout\n");
     hitBoxes.clear();
     static float timeToWaitBeforeFinish = 5000;
