@@ -133,11 +133,26 @@ private:
   }
   
   void draw(){
-    for(Cube cube:cubes){
-      cube.draw();
-    }
-    cubes[playerCubeID].vbuf().sprites[0].setImage(Player,playerRotation+currentSprite);
-    cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
+	float timertime = SystemTime::now()-startTime;
+	// LOG("timertime: %f",timertime);
+
+	int hours = timertime/60/60;
+	int minutes = (timertime-(hours*60*60))/60;
+
+	float seconds = timertime-(hours*60*60)-(minutes*60);
+
+	timerText.clear();
+	timerText<<Fixed(hours,3)<<":"<<Fixed(minutes,2)<<":"<<FixedFP(seconds,2,3);
+
+	for(Cube cube:cubes){
+	  cube.draw();
+	  if(cube.id() != playerCubeID){  
+	    cube.vbuf().bg1.text(vec(0,14),Font,timerText.c_str());
+	    cube.vbuf().bg1.setPanning(vec(-24,56));	
+	  }
+	}
+	cubes[playerCubeID].vbuf().sprites[0].setImage(Player,playerRotation+currentSprite);
+	cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
   }
   
   void doPhysics(float dt){
