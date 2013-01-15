@@ -304,10 +304,12 @@ private:
       if(win){
 	//      LOG("WIN!");
 	cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"WIN!");
+	cubes[playerCubeID].vbuf().bg1.text(vec(0,14),Font,timerText);
 	cubes[playerCubeID].vbuf().bg1.setPanning(vec(-24,80));
       }else{
 	//      LOG("Game Over!");
 	cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"Game Over!");
+	cubes[playerCubeID].vbuf().bg1.text(vec(0,14),Font,timerText);
 	cubes[playerCubeID].vbuf().bg1.setPanning(vec(-24,56));
       }
       System::paint();
