@@ -9,7 +9,7 @@ This was my January release for (http://onegameamonth.com) as well as my entry f
 
 TO PLAY on SDK:
 You can either run 
-    siftulator /path/to/snowboard.elf
+    **siftulator /path/to/snowboard.elf**
 or from the root directory of this repo run 
-    make run
-Once you have the game running on the emulator you can right click to tilt the cube you want to change the mountain on to get the player down and through the finish line, but watchout for the edge and obsticles in the way!
+    **make run**  .
+Once you have the game running on the emulator you can right click to tilt the cube you want to change the mountain on to get the player down and through the finish line, but watchout for the edge and obstacles in the way!
