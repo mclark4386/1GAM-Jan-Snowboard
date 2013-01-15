@@ -36,7 +36,7 @@ public:
     
     // Handle already-connected cubes
     for (CubeID cube : CubeSet::connected()){
-      cubes[cube].setup(cube);
+      onConnect(cube);
     }
     
     AudioTracker::play(Music);
@@ -51,10 +51,13 @@ public:
     while(running){
       ts.next();
       
-      for(int i = physicsClock.tick(ts.delta()); i;i--)
-	doPhysics(physicsClock.getPeriod());
+      if(!gameover){
+	for(int i = physicsClock.tick(ts.delta()); i;i--)
+	  doPhysics(physicsClock.getPeriod());
       
-      draw();
+	draw();
+      }
+
       System::paint();
     }
   }
@@ -69,9 +72,11 @@ private:
   bool gameover;
   unsigned currentSprite;
   spriteRotation playerRotation;
+  String<16> timerText;
 
   void onConnect(unsigned id){
     cubes[id].setup(id);
+    cubes[id].vbuf().bg1.setMask(BG1Mask::filled(vec(0,12),vec(16,4)));
   }
   
   void onTouch(unsigned id)
@@ -83,6 +88,11 @@ private:
 	cube.resetLayout();
       }
       startTime = SystemTime::now();
+      playerPos = vec(48,1);
+      playerVel = vec(0,0);
+      cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"            ");
+      System::paint();
+      gameover = false;
     }
     LOG("Touch event on cube #%d, state=%d\n", id, cube.isTouching());
   }
@@ -136,6 +146,16 @@ private:
     playerVel = calcNewVelocity(playerVel,cube.accel(),dt);
     playerPos = playerPos+ playerVel;
 
+    //check for obsticle collision
+    auto hitBoxes = cubes[playerCubeID].physicsBoxes();
+
+    for(auto it = hitBoxes.begin();it != hitBoxes.end();it++){
+      if(collisionDetect(playerPos,vec(32.0f,32.0f),it->origin(),it->size())){
+	GAMEOVER(it->win);
+      }
+    }
+
+    //check for world collision
     int side = sideOfWorldCollision(playerPos,vec(32,32));
     if(side != NO_SIDE){//we have a collision, so handle it
       LOG("collided with wall %d\n",side);
@@ -149,11 +169,12 @@ private:
 	if(newCubesSide == NO_SIDE){
 	  GAMEOVER(false);
 	}
-	//TODO: Check if side of new cube is open
+
 	unsigned oldCube = playerCubeID;
 	float vy = playerVel.y;
 	float vx = playerVel.x;
 	if(newCubesSide == TOP){;
+	  playerRotation = TOP_SPRITE;
 	  switch(side){
 	  case BOTTOM:
 	    break;
@@ -175,9 +196,9 @@ private:
 	  playerPos.y = -10;
 	  cubes[playerCubeID].vbuf().sprites.erase();
 	  playerCubeID = id;
-	  return;
-	}
+	}else
 	if(newCubesSide == BOTTOM){
+	  playerRotation = BOTTOM_SPRITE;
 	  switch(side){
 	  case BOTTOM:
 	    playerPos.x = 128 - 32 - playerPos.x;
@@ -199,9 +220,9 @@ private:
 	  playerPos.y = 100;
 	  cubes[playerCubeID].vbuf().sprites.erase();
 	  playerCubeID = id;
-	  return;
-	}
+	}else
 	if(newCubesSide == LEFT){
+	  playerRotation = LEFT_SPRITE;
 	  switch(side){
 	  case BOTTOM:
 	    playerVel.x = vy;
@@ -224,9 +245,9 @@ private:
 	  playerPos.x = -10;
 	  cubes[playerCubeID].vbuf().sprites.erase();
 	  playerCubeID = id;
-	  return;
-	}
+	}else
 	if(newCubesSide == RIGHT){
+	  playerRotation = RIGHT_SPRITE;
 	  switch(side){
 	  case BOTTOM:
 	    playerPos.y = playerPos.x;
@@ -249,10 +270,10 @@ private:
 	  playerPos.x = 100;
 	  cubes[playerCubeID].vbuf().sprites.erase();
 	  playerCubeID = id;
-	  return;
 	}
 	//reprepose oldCube
-	cubes[oldCube].resetLayout(startTime-SystemTime::now());
+	cubes[id].vbuf().bg1.text(vec(0,14),Font,"                ");
+	cubes[oldCube].resetLayout(SystemTime::now()-startTime);
       }
     }
     
@@ -261,11 +282,19 @@ private:
 
 
   void GAMEOVER(bool win){
-    //TODO: fill this out a bit more
-    if(win){
-      LOG("WIN!");
-    }else{
-      LOG("Game Over!");
+    if(!gameover){//if not already in a gameover state
+      gameover = true;
+      cubes[playerCubeID].vbuf().sprites.erase();
+      if(win){
+	//      LOG("WIN!");
+	cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"WIN!");
+	cubes[playerCubeID].vbuf().bg1.setPanning(vec(-24,80));
+      }else{
+	//      LOG("Game Over!");
+	cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"Game Over!");
+	cubes[playerCubeID].vbuf().bg1.setPanning(vec(-24,56));
+      }
+      System::paint();
     }
   }
   

@@ -16,7 +16,9 @@ public:
     bool win;
     hitBox():originX(NAN),originY(NAN),sizeX(NAN),sizeY(NAN),win(false){};
     //hitBox(const hitBox& other):origin(other.origin),size(other.size),win(other.win){}
-    hitBox(Float2 origin, Float2 size, bool win):originX(origin.x),originY(origin.y),sizeX(size.x),sizeY(size.y),win(win){}
+    hitBox(Float2 origin, Float2 size, bool win):originX(origin.x),originY(origin.y),sizeX(size.x),sizeY(size.y),win(win){};
+    Float2 size() const{return vec(sizeX,sizeY);};
+    Float2 origin() const{return vec(originX,originY);};
   };
   static const unsigned MAX_UINT = -1;
 
@@ -45,14 +47,16 @@ public:
   void resetLayout(float time = 0){
     if(!isSetup)
       return;
-    LOG("resetLayout\n");
+    LOG("resetLayout:%f\n",time);
     hitBoxes.clear();
-    static float timeToWaitBeforeFinish = 5000;
-    static float percentChanceOfFinish = 90/100;
+    static float timeToWaitBeforeFinish = 5;//seems we are getting it in seconds
+    static float percentChanceOfFinish = 90.0f/100.0f;//10% chance to spawn the finish line
     if(time > timeToWaitBeforeFinish){//been playing for longer then 5seconds
-      if(rand.random() >= percentChanceOfFinish){//10% chance to spawn the finish line
+      float r = rand.random();
+      // LOG("got random: %f ?>= %f\n",r,percentChanceOfFinish);
+      if(r >= percentChanceOfFinish){
 	//spawn finishline
-	vid.bg0.image(vec(0,0),Snow,0);
+	vid.bg0.image(vec(0,0),SnowFinish,0);
 	hitBox win(vec(0,64),vec(128,32),true);
 	hitBoxes.append(win);
 	hitBox leftWall(vec(0,0),vec(14,128),false);
