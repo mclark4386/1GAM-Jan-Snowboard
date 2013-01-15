@@ -23,9 +23,15 @@ enum spriteRotation{
   RIGHT_SPRITE = 4,
   LEFT_SPRITE =12
 };
+enum spriteType{
+  TURN_RIGHT_SPRITE = 0,
+  SLOW_SPRITE,
+  TURN_LEFT_SPRITE,
+  FAST_SPRITE
+};
 class Game {
 public:
-  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(48,1)),playerVel(vec(0,0)),gameover(false),currentSprite(1),playerRotation(TOP_SPRITE){}
+  Game():physicsClock(60),running(true),playerCubeID(0),playerPos(vec(48,1)),playerVel(vec(0,0)),gameover(false),currentSprite(SLOW_SPRITE),playerRotation(TOP_SPRITE){}
 
   void install()
   {
@@ -70,7 +76,7 @@ private:
   Float2 playerPos;
   Float2 playerVel;
   bool gameover;
-  unsigned currentSprite;
+  spriteType currentSprite;
   spriteRotation playerRotation;
   String<16> timerText;
 
@@ -92,6 +98,7 @@ private:
       playerVel = vec(0,0);
       cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"               ");
       cubes[playerCubeID].vbuf().bg1.text(vec(0,14),Font,"               ");
+      currentSprite = SLOW_SPRITE;
       System::paint();
       gameover = false;
     }
@@ -163,11 +170,55 @@ private:
     playerVel = calcNewVelocity(playerVel,cube.accel(),dt);
     playerPos = playerPos+ playerVel;
 
+    static const float kSpriteTypeWeight = 2.0f; 
+
+    if(playerRotation == TOP_SPRITE){// down is (0,1)
+      if(playerVel.x >= kSpriteTypeWeight/2){//half the weights on turning, so that they show sooner
+	currentSprite = TURN_RIGHT_SPRITE;
+      }else if(playerVel.x <= -kSpriteTypeWeight/2){
+	currentSprite = TURN_LEFT_SPRITE;
+      }else if(playerVel.y >= kSpriteTypeWeight){
+	currentSprite = FAST_SPRITE;
+      }else{
+	currentSprite = SLOW_SPRITE;
+      }
+    }else if(playerRotation == BOTTOM_SPRITE){//down is (0,-1);
+      if(playerVel.x >= -kSpriteTypeWeight/2){
+	currentSprite = TURN_RIGHT_SPRITE;
+      }else if(playerVel.x <= kSpriteTypeWeight/2){
+	currentSprite = TURN_LEFT_SPRITE;
+      }else if(playerVel.y <= -kSpriteTypeWeight){
+	currentSprite = FAST_SPRITE;
+      }else{
+	currentSprite = SLOW_SPRITE;
+      }
+    }else if(playerRotation == LEFT_SPRITE){//down is (1,0);
+      if(playerVel.y >= kSpriteTypeWeight/2){
+	currentSprite = TURN_RIGHT_SPRITE;
+      }else if(playerVel.y <= -kSpriteTypeWeight/2){
+	currentSprite = TURN_LEFT_SPRITE;
+      }else if(playerVel.x >= kSpriteTypeWeight){
+	currentSprite = FAST_SPRITE;
+      }else{
+	currentSprite = SLOW_SPRITE;
+      }
+    }else if(playerRotation == RIGHT_SPRITE){//down is (-1,0);
+      if(playerVel.y >= -kSpriteTypeWeight/2){
+	currentSprite = TURN_RIGHT_SPRITE;
+      }else if(playerVel.y <= kSpriteTypeWeight/2){
+	currentSprite = TURN_LEFT_SPRITE;
+      }else if(playerVel.x <= kSpriteTypeWeight){
+	currentSprite = FAST_SPRITE;
+      }else{
+	currentSprite = SLOW_SPRITE;
+      }
+    }
+
     //check for obsticle collision
     auto hitBoxes = cubes[playerCubeID].physicsBoxes();
 
     for(auto it = hitBoxes.begin();it != hitBoxes.end();it++){
-      if(collisionDetect(playerPos,vec(32.0f,32.0f),it->origin(),it->size())){
+      if(collisionDetect(vec(playerPos.x+4,playerPos.y+4),vec(24.0f,24.0f),it->origin(),it->size())){//reduce the hit box on the player since the sprite isn't the full 32pix
 	GAMEOVER(it->win);
       }
     }
