@@ -90,7 +90,8 @@ private:
       startTime = SystemTime::now();
       playerPos = vec(48,1);
       playerVel = vec(0,0);
-      cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"            ");
+      cubes[playerCubeID].vbuf().bg1.text(vec(0,12),Font,"               ");
+      cubes[playerCubeID].vbuf().bg1.text(vec(0,14),Font,"               ");
       System::paint();
       gameover = false;
     }
