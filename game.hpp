@@ -141,16 +141,17 @@ private:
 
 	float seconds = timertime-(hours*60*60)-(minutes*60);
 
-	timerText.clear();
+	timerText.clear();//make sure it's ready for next time
 	timerText<<Fixed(hours,3)<<":"<<Fixed(minutes,2)<<":"<<FixedFP(seconds,2,3);
 
 	for(Cube cube:cubes){
 	  cube.draw();
-	  if(cube.id() != playerCubeID){  
-	    cube.vbuf().bg1.text(vec(0,14),Font,timerText.c_str());
-	    cube.vbuf().bg1.setPanning(vec(-24,56));	
+	  if(cube.id() != playerCubeID && cube.id() != Cube::MAX_UINT){  
+	    cubes[cube.id()].vbuf().bg1.text(vec(0,14),Font,timerText);
+	    cubes[cube.id()].vbuf().bg1.setPanning(vec(-15,56));	
 	  }
 	}
+
 	cubes[playerCubeID].vbuf().sprites[0].setImage(Player,playerRotation+currentSprite);
 	cubes[playerCubeID].vbuf().sprites[0].move(playerPos);
   }
