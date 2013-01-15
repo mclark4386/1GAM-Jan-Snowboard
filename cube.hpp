@@ -83,10 +83,10 @@ public:
       LOG("curve\n");
       //curve
       vid.bg0.image(vec(0,0),SnowCurve,0);
-      hitBoxes.push_back(hitBox(vec(0,0),vec(16,32),false));
-      hitBoxes.push_back(hitBox(vec(114,0),vec(14,128),false));
-      hitBoxes.push_back(hitBox(vec(0,114),vec(128,14),false));
-      hitBoxes.push_back(hitBox(vec(102,49),vec(12,65),false));
+      hitBoxes.push_back(hitBox(vec(0,0),vec(16,20),false));//bit on the left
+      hitBoxes.push_back(hitBox(vec(114,0),vec(14,128),false));//left wall
+      hitBoxes.push_back(hitBox(vec(0,114),vec(128,14),false));//bottom wall
+      hitBoxes.push_back(hitBox(vec(102,49),vec(12,65),false));//chunks...
       hitBoxes.push_back(hitBox(vec(83,63),vec(16,51),false));
       hitBoxes.push_back(hitBox(vec(53,88),vec(33,26),false));
       hitBoxes.push_back(hitBox(vec(27,103),vec(26,11),false));
